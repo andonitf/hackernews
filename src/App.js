@@ -71,7 +71,7 @@ class App extends Component {
   }
 
   setSearchTopstories(result) {
-    const { searchTerm, hits, page } = result;
+    const { hits, page } = result;  // page es un datos más del resultado del API.
 
     const oldHits = page !== 0 ? this.state.result.hits : [];
 
@@ -80,7 +80,7 @@ class App extends Component {
     // const { searchTerm } = this.state;
     // Hurrengo bi lerroak jartzen ditut, title batzuk '' bezela datozelako. APIak ez du hor bakarrik begiratuko.
     const updatedAndLocalFilteredHits = updatedHits.filter(
-      isSearched(searchTerm)
+      isSearched(this.state.searchTerm)
     );
     result = { ...result, hits: updatedAndLocalFilteredHits, page };
 
