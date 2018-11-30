@@ -65,9 +65,9 @@ class App extends Component {
   }
 
   setSearchTopstories(result) {
-    console.log('result');
+    console.log("result");
     console.log(result);
-    
+
     this.setState({ result });
   }
   fetchSearchTopstories(searchTerm) {
@@ -87,10 +87,12 @@ class App extends Component {
     // función a la que se llama para cada item de la lista, al filtrar con .filter
     // el elemento (item) de cada iteración va implícito en la llamada.
     const isNotId = item => item.objectID !== id;
-    const updatedList = this.state.list.filter(isNotId);
+    const updatedHits = this.state.result.hits.filter(isNotId);
     // Todo en una sola línea, pero menos legible.
     // const updatedList = this.state.list.filter(item => item.objectID !== id);
-    this.setState({ list: updatedList });
+    this.setState({
+      result: { ...this.state.result, hits: updatedHits }
+    });
   }
   onSearchChange(event) {
     this.setState({ searchTerm: event.target.value });
@@ -98,7 +100,9 @@ class App extends Component {
 
   render() {
     const { searchTerm, result } = this.state;
-    if (!result) { return null; }
+    if (!result) {
+      return null;
+    }
     return (
       <div className="page">
         <div className="interactions">
@@ -106,7 +110,11 @@ class App extends Component {
             Search
           </Search>
         </div>
-        <Table list={result.hits} pattern={searchTerm} onDismiss={this.onDismiss} />
+        <Table
+          list={result.hits}
+          pattern={searchTerm}
+          onDismiss={this.onDismiss}
+        />
       </div>
     );
   }
