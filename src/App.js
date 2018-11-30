@@ -3,10 +3,12 @@ import React, { Component } from "react";
 import "./App.css";
 
 const DEFAULT_QUERY = "redux";
+const DEFAULT_PAGE = 0;
 const PATH_BASE = "https://hn.algolia.com/api/v1";
 const PATH_SEARCH = "/search";
 const PARAM_SEARCH = "query=";
-// const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${DEFAULT_QUERY}`;
+const PARAM_PAGE = "page=";
+// const url = `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}`;
 // console.log(url);
 // const list = [
 //   {
@@ -69,21 +71,31 @@ class App extends Component {
   }
 
   setSearchTopstories(result) {
+    const { searchTerm, hits, page } = result;
+
+    const oldHits = page !== 0 ? this.state.result.hits : [];
+
+    const updatedHits = [...oldHits, ...hits];
+
     // const { searchTerm } = this.state;
     // Hurrengo bi lerroak jartzen ditut, title batzuk '' bezela datozelako. APIak ez du hor bakarrik begiratuko.
-    const updatedHits = result.hits.filter(isSearched(this.state.searchTerm));
-    result = { ...result, hits: updatedHits };
+    const updatedAndLocalFilteredHits = updatedHits.filter(
+      isSearched(searchTerm)
+    );
+    result = { ...result, hits: updatedAndLocalFilteredHits, page };
 
     this.setState({ result });
   }
-  fetchSearchTopstories(searchTerm) {
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
+  fetchSearchTopstories(searchTerm, page) {
+    fetch(
+      `${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}`
+    )
       .then(response => response.json())
       .then(result => this.setSearchTopstories(result));
   }
   componentDidMount() {
     const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm);
+    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
   }
   onDismiss(id) {
     // function isNotId(item) {
@@ -105,12 +117,13 @@ class App extends Component {
   }
   onSearchSubmit(event) {
     const { searchTerm } = this.state;
-    this.fetchSearchTopstories(searchTerm);
+    this.fetchSearchTopstories(searchTerm, DEFAULT_PAGE);
     event.preventDefault();
   }
 
   render() {
     const { searchTerm, result } = this.state;
+    const page = (result && result.page) || 0;
 
     return (
       <div className="page">
@@ -124,6 +137,13 @@ class App extends Component {
           </Search>
         </div>
         {result && <Table list={result.hits} onDismiss={this.onDismiss} />}
+        <div className="interactions">
+          <Button
+            onClick={() => this.fetchSearchTopstories(searchTerm, page + 1)}
+          >
+            More
+          </Button>
+        </div>
       </div>
     );
   }
