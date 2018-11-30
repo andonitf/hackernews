@@ -88,14 +88,14 @@ const Search = ({ value, onChange, children }) => (
 );
 
 const largeColumn = {
-  width: '40%',
-  };
-  const midColumn = {
-  width: '30%',
-  };
-  const smallColumn = {
-  width: '10%',
-  };
+  width: "40%"
+};
+const midColumn = {
+  width: "30%"
+};
+const smallColumn = {
+  width: "10%"
+};
 
 const Table = ({ list, pattern, onDismiss }) => (
   <div className="table">
